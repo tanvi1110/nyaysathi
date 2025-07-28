@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import HomeFilledIcon from '@mui/icons-material/HomeFilled';
 import { Contacts, Edit, EditCalendar, FormatListBulleted, Language, QrCodeScanner, Settings } from '@mui/icons-material';
 const navItems = [
@@ -8,13 +9,14 @@ const navItems = [
     { label: 'Tasks', icon: FormatListBulleted, href: '/task/task' },
     { label: 'Contacts', icon: Contacts, href: '/contact/contact' },
     { label: 'AI Summarizer', icon: QrCodeScanner, href: 'ai-summarizer/ai-summarizer' },
-    { label: 'Legal Notes / Drafts', icon: Edit, href: '#' },
-    { label: 'Language Translation', icon: Language, href: '#' },
+    { label: 'Legal Notes / Drafts', icon: Edit, href: '/legal-notes/legal-notes' },
+    { label: 'Language Translation', icon: Language, href: '/language-translation' },
     { label: 'Settings', icon: Settings, href: '#' },
 ];
 
 export default function Sidebar() {
     const [open, setOpen] = useState(true);
+    const router = useRouter();
 
     return (
         <aside className={`fixed left-0 top-0 h-full w-64 bg-[#F4F5FF] border-r border-[#E5E7EB] p-4 justify-between transition-all duration-300 z-40 ${open ? '' : 'w-20'}`}>
@@ -30,18 +32,21 @@ export default function Sidebar() {
                     </button>
                 </div>
                 <nav className="flex flex-col gap-4">
-                    {navItems.map((item, idx) => (
-                        <Link href={item.href} key={item.label} legacyBehavior>
-                            <a className={`flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-[#E0E7FF] transition ${idx === 0 ? 'bg-[#E0E7FF]' : ''}`}>
-                                <span className="w-5 h-5 flex items-center justify-center">
-                                    {typeof item.icon === 'string'
-                                        ? <img src={item.icon} alt="" className="w-5 h-5" />
-                                        : item.icon && <item.icon fontSize="small" />}
-                                </span>
-                                <span className={`text-sm font-medium transition-all duration-300 ${!open ? 'opacity-0 w-0' : ''}`}>{item.label}</span>
-                            </a>
-                        </Link>
-                    ))}
+                    {navItems.map((item) => {
+                        const isActive = router.pathname === item.href || (item.href !== '/' && router.pathname.startsWith(item.href));
+                        return (
+                            <Link href={item.href} key={item.label} legacyBehavior>
+                                <a className={`flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-[#E0E7FF] transition ${isActive ? 'bg-[#E0E7FF]' : ''}`}>
+                                    <span className="w-5 h-5 flex items-center justify-center">
+                                        {typeof item.icon === 'string'
+                                            ? <img src={item.icon} alt="" className="w-5 h-5" />
+                                            : item.icon && <item.icon fontSize="small" />}
+                                    </span>
+                                    <span className={`text-sm font-medium transition-all duration-300 ${!open ? 'opacity-0 w-0' : ''}`}>{item.label}</span>
+                                </a>
+                            </Link>
+                        );
+                    })}
                 </nav>
             </div>
             <div className={`flex items-center gap-3 p-3 rounded-lg bg-[#E0E7FF] mt-8 transition-all duration-300 ${!open ? 'justify-center' : ''}`}>
