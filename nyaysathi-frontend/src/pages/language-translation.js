@@ -49,14 +49,16 @@ const validateFile = (file) => {
 
 // Voice recording component
 function VoiceRecorder({ onTranscript, isRecording, onStartRecording, onStopRecording, recordingError }) {
-    const [isSupported, setIsSupported] = useState(true);
+    const [isSupported, setIsSupported] = useState(false); // Start with false to avoid hydration mismatch
     const [recordingTime, setRecordingTime] = useState(0);
     const intervalRef = useRef(null);
 
     // Check browser support
     useEffect(() => {
-        if (typeof window !== 'undefined' && !('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            setIsSupported(false);
+        // Only check on client side
+        if (typeof window !== 'undefined') {
+            const hasSpeechRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+            setIsSupported(hasSpeechRecognition);
         }
     }, []);
 
@@ -85,6 +87,18 @@ function VoiceRecorder({ onTranscript, isRecording, onStartRecording, onStopReco
         const secs = seconds % 60;
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
+
+    // Show loading state until we determine browser support
+    if (typeof window === 'undefined') {
+        return (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                    <div className="animate-pulse bg-gray-300 h-5 w-5 rounded"></div>
+                    <span className="text-sm text-gray-600">Checking voice recording support...</span>
+                </div>
+            </div>
+        );
+    }
 
     if (!isSupported) {
         return (
