@@ -1,5 +1,5 @@
 import { ChatOllama } from "@langchain/community/chat_models/ollama";
-import { ChatHuggingFace } from "@langchain/community/chat_models/huggingface";
+import { HuggingFaceInference } from "@langchain/community/llms/hf";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
@@ -64,11 +64,11 @@ export default async function handler(req, res) {
 
         // Try AI models in order of preference
         if (AI_MODELS.ollama.available) {
-            result = await useOllama(text, sourceLang, targetLang, mode);
+            result = await processWithOllama(text, sourceLang, targetLang, mode);
         } else if (AI_MODELS.huggingface.available) {
-            result = await useHuggingFace(text, sourceLang, targetLang, mode);
+            result = await processWithHuggingFace(text, sourceLang, targetLang, mode);
         } else {
-            result = await useEnhancedManual(text, sourceLang, targetLang, mode);
+            result = await processWithEnhancedManual(text, sourceLang, targetLang, mode);
         }
 
         return res.status(200).json(result);
@@ -84,7 +84,7 @@ export default async function handler(req, res) {
 }
 
 // Ollama (Local AI Model)
-async function useOllama(text, sourceLang, targetLang, mode) {
+async function processWithOllama(text, sourceLang, targetLang, mode) {
     try {
         const model = new ChatOllama({
             model: AI_MODELS.ollama.model,
@@ -116,9 +116,9 @@ async function useOllama(text, sourceLang, targetLang, mode) {
 }
 
 // HuggingFace (Free AI Model)
-async function useHuggingFace(text, sourceLang, targetLang, mode) {
+async function processWithHuggingFace(text, sourceLang, targetLang, mode) {
     try {
-        const model = new ChatHuggingFace({
+        const model = new HuggingFaceInference({
             model: AI_MODELS.huggingface.model,
             apiKey: AI_MODELS.huggingface.apiKey,
         });
@@ -148,7 +148,7 @@ async function useHuggingFace(text, sourceLang, targetLang, mode) {
 }
 
 // Enhanced Manual System (Fallback)
-async function useEnhancedManual(text, sourceLang, targetLang, mode) {
+async function processWithEnhancedManual(text, sourceLang, targetLang, mode) {
     // First, get basic translation
     const translationResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/translate`, {
         method: 'POST',

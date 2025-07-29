@@ -219,7 +219,7 @@ function CreateNewDropdown({ onSelect }) {
                             ))
                         ) : (
                             <div className="p-3 text-center text-gray-500">
-                                No options found for "{searchTerm}"
+                                No options found for &quot;{searchTerm}&quot;
                             </div>
                         )}
                     </div>
@@ -436,7 +436,7 @@ export default function DashboardPage() {
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-                            <p className="text-gray-600">Welcome back! Here's what's happening today.</p>
+                            <p className="text-gray-600">Welcome back! Here&apos;s what&apos;s happening today.</p>
                         </div>
 
                         {/* Global Search */}
@@ -484,7 +484,7 @@ export default function DashboardPage() {
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
                             <div className="space-y-3">
                                 <CreateNewDropdown onSelect={handleCreateNew} />
-                                
+
                                 <div className="grid grid-cols-2 gap-2">
                                     <Button variant="outline" className="w-full justify-center text-sm">
                                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -499,7 +499,7 @@ export default function DashboardPage() {
                                         Email
                                     </Button>
                                 </div>
-                                
+
                                 <div className="grid grid-cols-2 gap-2">
                                     <Button variant="outline" className="w-full justify-center text-sm">
                                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
