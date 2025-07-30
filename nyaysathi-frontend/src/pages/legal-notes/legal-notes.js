@@ -80,13 +80,13 @@ export default function LegalNotesPage() {
 
     const handleSavePdf = async (filename) => {
         setSaving(true);
-        
+
         // Track PDF save event
         track('pdf_saved', {
             filename: filename,
             content_length: value.length
         });
-        
+
         const doc = new jsPDF();
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = value;
@@ -155,6 +155,7 @@ export default function LegalNotesPage() {
                                 <a
                                     href={`/api/pdfs/${pdf._id}`}
                                     download={pdf.filename}
+                                    onClick={() => track('pdf_downloaded', { filename: pdf.filename })}
                                     className="w-full text-xs font-semibold px-4 py-2 rounded-lg transition cursor-pointer flex items-center justify-center gap-2 bg-[#2A59D1] hover:bg-[#002D9F] text-white"
                                 >
                                     Download
