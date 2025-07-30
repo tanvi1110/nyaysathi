@@ -8,7 +8,11 @@ export default async function handler(req, res) {
   const pdf = await Pdf.findById(id);
   if (!pdf) return res.status(404).json({ error: 'Not found' });
 
-  res.setHeader('Content-Type', pdf.contentType);
+  // Set proper headers for PDF download
+  res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', `attachment; filename="${pdf.filename}"`);
+  res.setHeader('Content-Length', pdf.data.length);
+
+  // Send the PDF buffer
   res.send(pdf.data);
 } 

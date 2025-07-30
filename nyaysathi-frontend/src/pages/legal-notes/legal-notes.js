@@ -67,6 +67,10 @@ export default function LegalNotesPage() {
     const [showModal, setShowModal] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
+    // Debug: Check if API key is available
+    console.log('TinyMCE API Key available:', !!process.env.NEXT_PUBLIC_TINYMCE_API);
+    console.log('TinyMCE API Key length:', process.env.NEXT_PUBLIC_TINYMCE_API?.length || 0);
+
     useEffect(() => {
         fetch('/api/pdfs')
             .then(res => res.json())
@@ -76,14 +80,11 @@ export default function LegalNotesPage() {
     const handleSavePdf = async (filename) => {
         setSaving(true);
         const doc = new jsPDF();
-        doc.setFontSize(16);
-        doc.text('Legal Note', 10, 20);
-        doc.setFontSize(12);
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = value;
         const text = tempDiv.innerText || tempDiv.textContent || '';
         const lines = doc.splitTextToSize(text, 180);
-        doc.text(lines, 10, 35);
+        doc.text(lines, 10, 20);
         const pdfBlob = doc.output('blob');
         const arrayBuffer = await pdfBlob.arrayBuffer();
         const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
@@ -104,7 +105,7 @@ export default function LegalNotesPage() {
             <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-6 mt-6">
                 <h1 className="text-2xl font-bold mb-4">Legal Notes / Drafts</h1>
                 <Editor
-                    apiKey={process.env.NEXT_PUBLIC_TINYMCE_API}
+                    apiKey={process.env.NEXT_PUBLIC_TINYMCE_API || ""}
                     value={value}
                     onEditorChange={setValue}
                     init={{
@@ -143,16 +144,13 @@ export default function LegalNotesPage() {
                                 <PdfIcon />
                                 <div className="font-medium text-center text-sm mb-2 break-words w-full">{pdf.filename}</div>
                                 <div className="text-xs text-gray-400 mb-3">{new Date(pdf.createdAt).toLocaleString()}</div>
-                                <Button
-                                    as="a"
+                                <a
                                     href={`/api/pdfs/${pdf._id}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    variant="primary"
-                                    className="w-full"
+                                    download={pdf.filename}
+                                    className="w-full text-xs font-semibold px-4 py-2 rounded-lg transition cursor-pointer flex items-center justify-center gap-2 bg-[#2A59D1] hover:bg-[#002D9F] text-white"
                                 >
                                     Download
-                                </Button>
+                                </a>
                             </div>
                         ))}
                     </div>

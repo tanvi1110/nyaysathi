@@ -10,7 +10,11 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Missing filename or data' });
         }
         const buffer = Buffer.from(data, 'base64');
-        const pdf = new Pdf({ filename, data: buffer });
+        const pdf = new Pdf({
+            filename,
+            data: buffer,
+            contentType: 'application/pdf'
+        });
         await pdf.save();
         return res.status(201).json({ message: 'PDF saved' });
     }
