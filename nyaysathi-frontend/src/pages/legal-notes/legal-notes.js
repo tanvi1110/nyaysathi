@@ -3,6 +3,7 @@ import Layout from '../../components/layout/Layout';
 import { Editor } from '@tinymce/tinymce-react';
 import { Button } from '../../components/ui/Button';
 import jsPDF from 'jspdf';
+import { track } from '@vercel/analytics';
 
 function FilenameModal({ open, onClose, onSave }) {
     const [filename, setFilename] = useState('');
@@ -79,6 +80,13 @@ export default function LegalNotesPage() {
 
     const handleSavePdf = async (filename) => {
         setSaving(true);
+        
+        // Track PDF save event
+        track('pdf_saved', {
+            filename: filename,
+            content_length: value.length
+        });
+        
         const doc = new jsPDF();
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = value;
