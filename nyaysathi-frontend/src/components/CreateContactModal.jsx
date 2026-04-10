@@ -3,7 +3,7 @@ import Modal from './ui/Modal';
 import { createContact } from '../utils/api';
 import toast from 'react-hot-toast';
 
-export default function CreateContactModal({ isOpen, onClose, onSubmit }) {
+export default function CreateContactModal({ open, onClose, onSubmit }) {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -13,7 +13,7 @@ export default function CreateContactModal({ isOpen, onClose, onSubmit }) {
     });
 
     useEffect(() => {
-        if (isOpen) {
+        if (open) {
             setFormData({
                 name: '',
                 email: '',
@@ -22,7 +22,7 @@ export default function CreateContactModal({ isOpen, onClose, onSubmit }) {
                 dob: ''
             });
         }
-    }, [isOpen]);
+    }, [open]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,7 +49,7 @@ export default function CreateContactModal({ isOpen, onClose, onSubmit }) {
 
     return (
         <Modal
-            isOpen={isOpen}
+            isOpen={open}
             onClose={onClose}
             title="Create New Contact"
             size="md"

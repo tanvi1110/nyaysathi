@@ -39,6 +39,12 @@ export default function TasksPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState(null);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+    const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+    const [filters, setFilters] = useState({
+        priority: 'All',
+        assignedTo: 'All',
+        assignedBy: 'All'
+    });
 
     useEffect(() => {
         getTasks().then(setTasks);
@@ -59,6 +65,17 @@ export default function TasksPage() {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [openDropdown]);
+
+    // Close filter dropdown on outside click
+    React.useEffect(() => {
+        function handleClickOutside(event) {
+            if (showFilterDropdown && !event.target.closest('.filter-dropdown')) {
+                setShowFilterDropdown(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showFilterDropdown]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -127,6 +144,30 @@ export default function TasksPage() {
         }
     };
 
+    // Filter tasks based on current filters
+    const filteredTasks = tasks.filter(task => {
+        const statusMatch = task.status === tab;
+        const priorityMatch = filters.priority === 'All' || task.priority === filters.priority;
+        const assignedToMatch = filters.assignedTo === 'All' ||
+            (task.assignedTo && typeof task.assignedTo === 'object' ? task.assignedTo.name === filters.assignedTo : task.assignedTo === filters.assignedTo);
+        const assignedByMatch = filters.assignedBy === 'All' ||
+            (task.assignedBy && typeof task.assignedBy === 'object' ? task.assignedBy.name === filters.assignedBy : task.assignedBy === filters.assignedBy);
+
+        return statusMatch && priorityMatch && assignedToMatch && assignedByMatch;
+    });
+
+    const handleFilterChange = (filterType, value) => {
+        setFilters(prev => ({ ...prev, [filterType]: value }));
+    };
+
+    const clearFilters = () => {
+        setFilters({
+            priority: 'All',
+            assignedTo: 'All',
+            assignedBy: 'All'
+        });
+    };
+
     // Table columns definition
     const columns = [
         { Header: 'Title', accessor: 'title', Cell: row => <span className="text-[#635BFF] underline cursor-pointer">{row.title}</span> },
@@ -187,10 +228,87 @@ export default function TasksPage() {
                     >
                         New Task +
                     </Button>
-                    <Button variant="outline" className="flex items-center">
-                        Filter
-                        <ArrowDropDown />
-                    </Button>
+                    <div className="relative">
+                        <Button
+                            variant="outline"
+                            className="flex items-center"
+                            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                        >
+                            Filter
+                            <ArrowDropDown />
+                        </Button>
+
+                        {showFilterDropdown && (
+                            <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50 p-4 filter-dropdown">
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                                        <select
+                                            value={filters.priority}
+                                            onChange={(e) => handleFilterChange('priority', e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                        >
+                                            <option value="All">All Priorities</option>
+                                            <option value="High">High</option>
+                                            <option value="Normal">Normal</option>
+                                            <option value="Low">Low</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Assigned To</label>
+                                        <select
+                                            value={filters.assignedTo}
+                                            onChange={(e) => handleFilterChange('assignedTo', e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                        >
+                                            <option value="All">All Assignees</option>
+                                            {contacts.map(contact => (
+                                                <option key={contact._id} value={contact.name}>
+                                                    {contact.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Assigned By</label>
+                                        <select
+                                            value={filters.assignedBy}
+                                            onChange={(e) => handleFilterChange('assignedBy', e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                        >
+                                            <option value="All">All Assigners</option>
+                                            {contacts.map(contact => (
+                                                <option key={contact._id} value={contact.name}>
+                                                    {contact.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="flex gap-2 pt-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={clearFilters}
+                                            className="flex-1"
+                                        >
+                                            Clear
+                                        </Button>
+                                        <Button
+                                            variant="primary"
+                                            size="sm"
+                                            onClick={() => setShowFilterDropdown(false)}
+                                            className="flex-1"
+                                        >
+                                            Apply
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                     <Button
                         variant="danger"
                         onClick={handleResetCollection}
@@ -198,11 +316,11 @@ export default function TasksPage() {
                         Reset Collection
                     </Button>
                 </div>
-                <GridTable columns={columns} data={tasks.filter(t => t.status === tab)} />
+                <GridTable columns={columns} data={filteredTasks} />
             </div>
             {
                 <CreateTaskModal
-                    open={showModal}
+                    isOpen={showModal}
                     onClose={() => setShowModal(false)}
                     onSubmit={handleSubmit}
                     contacts={contacts}

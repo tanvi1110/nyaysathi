@@ -1,4 +1,4 @@
-import toast from 'react-hot-toast';
+﻿import toast from 'react-hot-toast';
 
 export const getTasks = async () => {
     try {
@@ -67,7 +67,7 @@ export const resetTaskCollection = async () => {
 
 export const getContacts = async () => {
     const res = await fetch('/api/contacts')
-    return await res.json(res)
+    return await res.json()
 }
 
 export const createContact = async (data) => {

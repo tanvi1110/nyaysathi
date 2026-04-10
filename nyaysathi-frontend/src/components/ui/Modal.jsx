@@ -22,7 +22,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-[9999] overflow-y-auto p-4 pt-16">
+        <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-[999999] overflow-y-auto p-4 pt-16">
             <div className={`bg-white rounded-lg shadow-xl w-full ${sizeClasses[size]} p-6`}>
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold text-gray-900">{title}</h2>

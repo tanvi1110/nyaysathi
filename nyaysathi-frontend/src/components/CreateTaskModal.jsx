@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './ui/Modal';
 
-export default function CreateTaskModal({ isOpen, onClose, onSubmit, contacts = [], initialFormData = {} }) {
+export default function CreateTaskModal({ open, onClose, onSubmit, contacts = [], initialFormData = {} }) {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -22,7 +22,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSubmit, contacts = 
             assignedBy: '',
             ...initialFormData
         });
-    }, [isOpen, initialFormData]);
+    }, [open, initialFormData]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,7 +35,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSubmit, contacts = 
 
     return (
         <Modal
-            isOpen={isOpen}
+            isOpen={open}
             onClose={onClose}
             title="Create New Task"
             size="md"

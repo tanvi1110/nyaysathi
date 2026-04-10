@@ -3,19 +3,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #f4f6fc;
+  --foreground: #1e293b;
+  --surface-card: #ffffff;
+  --brand: #2a59d1;
+  --brand-hover: #002d9f;
+  --border-subtle: #e2e8f0;
+  --sidebar: #eef1ff;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: DM Sans, Helvetica, sans-serif;
+  font-family: DM Sans, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--brand) 22%, transparent);
 }
